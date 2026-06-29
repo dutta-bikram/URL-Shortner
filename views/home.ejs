@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            gap: 20px;
+
+            background: linear-gradient(135deg, #84fab0, #8fd3f4);
+        }
+        .copy-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        .copy-icon:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>URL shortner</h1>
+    
+    <div>
+        <form method="post" action="/url">
+            <div>Enter your original URL</div>
+            <input type="text" name="url" placeholder="https://example.com">
+            <button type="submit">Generate</button>
+        </form>
+    </div>
+
+    <% if (id) { %>
+        <p>
+            URL Generated:
+            <a id="shortUrl"
+               href="http://localhost:8001/<%= id %>"
+               target="_blank"
+               rel="noopener noreferrer">
+                http://localhost:8001/<%= id %>
+            </a>
+            
+            <span style="margin-left: 8px;" class="copy-icon" onclick="copyUrl(this) ">📋</span>
+        </p>
+    <% } %>
+
+    <% if (locals.error) { %>
+        <p>ERROR: URL Required</p>
+    <% } %>
+
+
+<script>
+    async function copyUrl(el) {
+        const url = document.getElementById("shortUrl").href;
+
+        await navigator.clipboard.writeText(url);
+        el.textContent = "✅";
+
+        setTimeout(() => {
+            el.textContent = "📋";
+        }, 1000);
+    }
+</script>
+</body>
+</html>
