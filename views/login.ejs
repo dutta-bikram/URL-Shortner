@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
+    <title>signup</title>
+
     <style>
         body {
             display: flex;
@@ -31,9 +32,9 @@
             background-color: #f0f0f0;
         }
     </style>
+
 </head>
 <body>
-    
     <nav style="width:100%; display:flex; justify-content:space-between; align-items:center; padding:18px 40px; background:rgba(255,255,255,0.25); backdrop-filter:blur(8px); box-sizing:border-box;">
         <a href="/"
             style="text-decoration:none; color:#222; padding:8px 18px; border:1px solid #222; border-radius:8px;">
@@ -45,10 +46,7 @@
                 <a href="/user/logout" style="text-decoration:none; color:#222; padding:8px 18px; border:1px solid #222; border-radius:8px;">
                     Log out
                 </a>
-                <a href="/profile" style="text-decoration:none; color:#222; padding:8px 18px; border:1px solid #222; border-radius:8px;">
-                    Profile
-                </a>
-            <% } else { %>
+            <% }else { %>
                 <a href="/login" style="text-decoration:none; color:#222; padding:8px 18px; border:1px solid #222; border-radius:8px;">
                     Login
                 </a>
@@ -59,59 +57,20 @@
         </div>
     </nav>
 
-
-    <h1>URL shortner</h1>
-    <div>
-        <form method="post" action="/url">
-            <div>Enter your original URL</div>
-            <input type="text" name="url" placeholder="https://example.com">
-            <button type="submit">Generate</button>
-        </form>
-    </div>
-
-    <% if (locals.id) { %>
-        <p>
-            URL Generated:
-            <a id="shortUrl"
-               href="<%= baseURL %><%= id %>"
-               target="_blank"
-               rel="noopener noreferrer">
-                <%= baseURL %><%= id %>
-            </a>
-            
-            <span style="margin-left: 8px;" class="copy-icon" onclick="copyUrl(this) ">📋</span>
-        </p>
+    <h1>Log in</h1>
+    <form action="/user/login" method="post">
+        <div>email</div>
+        <input type="text" required name="email"/>
+        <div>password</div>
+        <input type="text" required name="password"/>
+        <br>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <% if(locals.status){ %>
+        <div>status: <%= status %></div>
     <% } %>
 
-    <% if (locals.error) { %>
-        <p>ERROR: URL Required</p>
-    <% } %>
 
-    <% if (locals.status) { %>
-        <div>Message: <%= status %></div>
-    <% } %>
-    
-
-
-
-
-
-
-
-
-
-
-<script>
-    async function copyUrl(el) {
-        const url = document.getElementById("shortUrl").href;
-
-        await navigator.clipboard.writeText(url);
-        el.textContent = "✅";
-
-        setTimeout(() => {
-            el.textContent = "📋";
-        }, 1000);
-    }
-</script>
 </body>
 </html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#84fab0,#8fd3f4);
+    min-height:100vh;
+}
+
+nav{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 40px;
+    background:rgba(255,255,255,.25);
+    backdrop-filter:blur(10px);
+}
+
+nav a{
+    text-decoration:none;
+    color:#222;
+    border:1px solid #222;
+    padding:8px 18px;
+    border-radius:8px;
+}
+
+.container{
+    width:90%;
+    max-width:1000px;
+    margin:40px auto;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+    margin-bottom:30px;
+}
+
+.card h2{
+    margin-bottom:20px;
+}
+
+.info{
+    display:grid;
+    grid-template-columns:150px 1fr;
+    row-gap:15px;
+    font-size:18px;
+}
+
+.info span:first-child{
+    font-weight:bold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:14px;
+    text-align:left;
+    border-bottom:1px solid #ddd;
+}
+
+th{
+    background:#4CAF50;
+    color:white;
+}
+
+tr:hover{
+    background:#f7f7f7;
+}
+
+.short-link{
+    color:#1565c0;
+    text-decoration:none;
+}
+
+.copy-btn{
+    cursor:pointer;
+    font-size:20px;
+}
+
+.copy-btn:hover{
+    transform:scale(1.15);
+}
+
+.empty{
+    text-align:center;
+    padding:25px;
+    color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <a href="/">Home</a>
+
+    <div style="display:flex;gap:12px;">
+        <a href="/user/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Profile</h2>
+
+        <div class="info">
+            <span>Name :</span>
+            <span><%= user.name %></span>
+
+            <span>Email :</span>
+            <span><%= user.email %></span>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <h2>My URLs</h2>
+
+        <% if(urls.length===0){ %>
+
+            <div class="empty">
+                No URLs created yet.
+            </div>
+
+        <% } else { %>
+        
+        <div class="actions">
+            <button onclick="deleteSelected()">
+                Delete Selected
+            </button>
+        </div>
+        <br>
+        <table>
+
+            <thead>
+                <tr>
+                    <th>analytics</th>
+                    <th>Short URL</th>
+                    <th>Original URL</th>
+                    <th>Clicks</th>
+                    <th>Copy</th>
+                    <th>
+                        <input type="checkbox" id="selectAll">
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            <% urls.forEach((url,index)=>{ %>
+
+                <tr>
+                    <td>
+                        <a href="/url/analytics/<%= url.shortID %>" target="_blank">
+                            view
+                        </a>
+                    </td>
+                    <td>
+                        <a
+                        id="short<%= index %>"
+                        class="short-link"
+                        href="<%= baseURL %><%= url.shortID %>"
+                        target="_blank">
+
+                        <%= baseURL %><%= url.shortID %>
+
+                        </a>
+                    </td>
+
+                    <td>
+                        <a href="<%= url.redirectURL %>" target="_blank">
+                            <%= url.redirectURL %>
+                        </a>
+                    </td>
+
+                    <td>
+                        <%= url.visitHistory.length %>
+                    </td>
+
+                    <td>
+                        <span
+                        class="copy-btn"
+                        onclick="copyLink( <%= index %> , this)">
+                        📋
+                        </span>
+                    </td>
+
+                    <td>
+                        <input
+                            type="checkbox"
+                            class="url-checkbox"
+                            value="<%= url.shortID %>">
+                    </td>
+
+                </tr>
+
+            <% }) %>
+
+            </tbody>
+
+        </table>
+
+        <% } %>
+
+    </div>
+
+
+
+</div>
+
+<script>
+
+
+const selectAll = document.getElementById("selectAll");
+
+selectAll.addEventListener("change", function () {
+
+    document.querySelectorAll(".url-checkbox").forEach(cb => {
+        cb.checked = this.checked;
+    });
+
+});
+
+
+
+
+async function deleteSelected() {
+
+    const ids = [...document.querySelectorAll(".url-checkbox:checked")]
+        .map(cb => cb.value);
+
+    if (ids.length === 0) {
+        alert("Please select at least one URL.");
+        return;
+    }
+
+    const ok = confirm(`Delete ${ids.length} URL(s)?`);
+
+    if(!ok) return;
+
+    const res = await fetch("/url/delete", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ids })
+    });
+
+    if (res.ok) {
+        location.reload();
+    } else {
+        alert("Failed to delete.");
+    }
+}
+
+
+
+async function copyLink(index,el){
+
+    const link=document.getElementById("short"+index).href;
+
+    await navigator.clipboard.writeText(link);
+
+    el.innerHTML="✅";
+
+    setTimeout(()=>{
+        el.innerHTML="📋";
+    },1000);
+
+}
+
+</script>
+
+</body>
+</html>

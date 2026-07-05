@@ -1,0 +1,22 @@
+const mongoose = require('mongoose');
+const { applyTimestamps } = require('./url');
+
+const userSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    password: {
+        type: String,
+        required: true
+    }
+},
+{timestamps: true});
+
+const userObj = mongoose.model('user', userSchema);
+module.exports = userObj;

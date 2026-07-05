@@ -5,6 +5,7 @@ const router = express.Router();
 
 
 router.post('/url', controller.handleGenerateNewShortURL);
+router.delete('/url/delete', controller.handleDeleteURLs);
 router.get('/url/analytics/:shortId', controller.handleGetAnalytics);
-router.get('/:shortId', controller.handleRedirectingToOriginalURL);
+router.get('/profile', controller.handleProfilePage);
 module.exports = router;
